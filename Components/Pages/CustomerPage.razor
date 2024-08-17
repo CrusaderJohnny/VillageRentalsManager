@@ -15,7 +15,6 @@
             }
         </select>
     </label>
-    <button @onclick="LoadCustomersToList">Load Customers</button>
     <label>
         Customer ID:
         <input @bind-value="foundCustomerId" readonly />
@@ -112,10 +111,6 @@
     private bool isBanned { get; set; }
     private string? errMess;
     private string? victoryMessage;
-    private async Task SetInfo()
-    {
-        await LoadSelectedClient(foundCustomerId);
-    }
     void LoadIdtoManage()
     {
         customerLast = selectedClient.LastName;
@@ -141,6 +136,7 @@
         selectedClient = new Client();
         modifiedClient = new Client();
         addClient = new Client();
+        await LoadCustomersToList();
     }
 
 
@@ -156,6 +152,7 @@
     private async Task LoadSelectedClient(int selectedId)
     {
         selectedClient = await clientManager.GetAClientAsync(selectedId);
+        LoadIdtoManage();
     }
     private async Task SaveChangesToClient()
     {

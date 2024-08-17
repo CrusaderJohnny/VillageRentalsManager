@@ -26,7 +26,6 @@
             <option value="@cat.CategoryId">@cat</option>
         }
     </select>
-    <button @onclick="LoadCategoriesList">Load Categories</button>
 </div>
 <div>
     <button @onclick="RemoveCategory">Delete Selected Category</button>
@@ -74,10 +73,11 @@
         categories = await manageCategories.GetAllEquipmentCategoryAsync();
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         categoryToAdd = new EquipmentCategory();
         categoryToRemove = new EquipmentCategory();
+        await LoadCategoriesList();
     }
 
     private async Task CheckCategories()
