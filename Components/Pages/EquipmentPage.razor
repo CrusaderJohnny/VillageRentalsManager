@@ -115,26 +115,36 @@
     }
     private async Task AddEditTool()
     {
-        Equipment equipment = new Equipment
-            {
-                EquipmentId = Int32.Parse(equipmentIdInput),
-                CategoryId = Int32.Parse(categoryIdInput),
-                EqName = equipmentName,
-                Description = equipmentDesc,
-                DailyRate = Double.Parse(dailyRateInput),
-                Available = bool.Parse(equipmentAvail),
-            };
-        foreach (Equipment eqItme in equipmentList)
+        try
         {
-            if (eqItme.EquipmentId == equipment.EquipmentId)
+            Equipment equipment = new Equipment
+                {
+                    EquipmentId = Int32.Parse(equipmentIdInput),
+                    CategoryId = Int32.Parse(categoryIdInput),
+                    EqName = equipmentName,
+                    Description = equipmentDesc,
+                    DailyRate = Double.Parse(dailyRateInput),
+                    Available = bool.Parse(equipmentAvail),
+                };
+            foreach (Equipment eqItme in equipmentList)
             {
-                await Connection.UpdateEquipmentAsync(equipment);
-            }
-            else
-            {
-                await Connection.InsertEquipmentAsync(equipment);
+                if (eqItme.EquipmentId == equipment.EquipmentId)
+                {
+                    await Connection.UpdateEquipmentAsync(equipment);
+                    victoryMessage = $"{equipment.EquipmentId} updated"; 
+                }
+                else
+                {
+                    await Connection.InsertEquipmentAsync(equipment);
+                    victoryMessage = $"{equipment.EquipmentId} added";
+                }
             }
         }
+        catch (Exception ex)
+        {
+            errMess = ex.Message;
+        }
+
 
 
     }
