@@ -127,7 +127,7 @@
     private DateTime endDateInput { get; set; } = DateTime.Today;
     private string rentalEndDate { get; set; } = string.Empty;
     private double equipmentCost { get; set; } = 0.00;
-    private double totalCostOutput { get; set; } = 0.00;
+    private double totalCostOutput { get; set; }
     private string? errMess;
     private string? victoryMessage;
     private List<Client> clientList = new List<Client>();
@@ -158,7 +158,6 @@
         rentalIdInput = "0";
         customerIdInput = "Any";
         cLastName = "Blank";
-        equipmentIdSelection = "Blank";
         equipmentCost = 0.00;
         totalCostOutput = 0.00;
         clientList = await connection.GetAllClientsAsync();
@@ -172,18 +171,22 @@
     {
         selectedClient = await connection.GetAClientAsync(Int32.Parse(customerIdInput));
     }
-    private void TotalCostCalc()
-    {
-
-    }
     private async Task tally()
     {
-        int equipmentId = Int32.Parse(equipmentIdSelection);
-        Equipment eqItem = await connection2.GetASingleEquipmentAsync(equipmentId);
-        equipmentCost = eqItem.DailyRate;
-        days = (endDateInput - startDateInput).TotalDays;
-        totalCostOutput = days * eqItem.DailyRate;
-       
+        try
+        {
+            int equipmentId = Int32.Parse(equipmentIdSelection);
+            Equipment eqItem = await connection2.GetASingleEquipmentAsync(equipmentId);
+            equipmentCost = eqItem.DailyRate;
+            days = (endDateInput - startDateInput).TotalDays;
+            totalCostOutput = days * equipmentCost;
+
+        }
+        catch(Exception ex)
+        {
+            errMess = ex.Message;
+        }
+
 
     }
     protected async Task AddEquipment()
