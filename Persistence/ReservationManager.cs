@@ -21,7 +21,7 @@ namespace VillageRentalsManager.Persistence
             connection = new SQLiteAsyncConnection(dbPath, Constants.Flags);
             connection.CreateTableAsync<Reservation>().Wait();
         }
-        public Task<int> InsertReservation(Reservation reservation) // This will save the reservation 
+        public Task<int> InsertReservationAsync(Reservation reservation) // This will save the reservation 
         {
             if (reservation.RentalId != 0)
             {
