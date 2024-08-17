@@ -196,26 +196,34 @@
     }
     protected async Task AddEquipment()
     {
-        Reservation rental = new Reservation
-            {
-                RentalId = rentalRandomizer,
-                Date = dayReserved,
-                CustomerId = Int32.Parse(customerIdInput),
-                LastName = cLastName,
-                EquipmentId = Int32.Parse(equipmentIdSelection),
-                EqCost = equipmentCost,
-                StartDate = startDateInput.ToShortDateString(),
-                ReturnDate = endDateInput.ToShortDateString(),                
-                TotalCost = totalCostOutput,
-            };
-        await connection3.InsertReservationAsync(rental);
-        victoryMessage = $"Succusfully added {rental}";
-        rentalIdInput = "0";
-        customerIdInput = "Any";
-        cLastName = "Blank";
-        equipmentIdSelection = "Blank";
-        equipmentCost = 0.00;
-        totalCostOutput = 0.00;
+        try
+        {
+            Reservation rental = new Reservation
+                {
+                    RentalId = rentalRandomizer,
+                    Date = dayReserved,
+                    CustomerId = customerSelect,
+                    LastName = cLastName,
+                    EquipmentId = Int32.Parse(equipmentIdSelection),
+                    EqCost = equipmentCost,
+                    StartDate = startDateInput.ToShortDateString(),
+                    ReturnDate = endDateInput.ToShortDateString(),
+                    TotalCost = totalCostOutput,
+                };
+            await connection3.InsertReservationAsync(rental);
+            victoryMessage = $"Succusfully added {rental}";
+            rentalIdInput = "0";
+            customerIdInput = "Any";
+            cLastName = "Blank";
+            equipmentIdSelection = "Blank";
+            equipmentCost = 0.00;
+            totalCostOutput = 0.00;
+        }
+        catch(Exception ex)
+        {
+            errMess = ex.Message;
+        }
+
     }
 
 }
