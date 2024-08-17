@@ -19,11 +19,11 @@
     </label>
     <label>
         customerID:
-        <input @bind-value="customerIdInput" readOnly />
+        <input @bind-value="customerSelect" readOnly />
     </label>
 </div>
 <div id="selectWheel">
-    <select @bind="customerIdInput">
+    <select @bind="customerSelect">
         @foreach (var clients in clientList)
         {
             <option value="@clients.CustomerID">@clients</option>
@@ -132,13 +132,13 @@
     private string? victoryMessage;
     private List<Client> clientList = new List<Client>();
     private List<Equipment> equipmentList = new List<Equipment>();
-    private string? _customerSelect;
+    private int _customerSelect;
     private string? _equipmentSelect;
     private Client selectedClient;
     private Equipment selectedEquipment;
     private double days;
     private List<Reservation> rentalList = new List<Reservation>();
-    string? customerSelect
+    int customerSelect
     {
         get
         {
@@ -146,7 +146,8 @@
         }
         set
         {
-            _customerSelect = value; FindClient(); cLastName = selectedClient.LastName;
+            _customerSelect = value;
+            cLastName = selectedClient.LastName;
         }
     }
 
@@ -179,6 +180,10 @@
             Equipment eqItem = await connection2.GetASingleEquipmentAsync(equipmentId);
             equipmentCost = eqItem.DailyRate;
             days = (endDateInput - startDateInput).TotalDays;
+            if(days == 0)
+            {
+                days = 1;
+            }
             totalCostOutput = days * equipmentCost;
 
         }
