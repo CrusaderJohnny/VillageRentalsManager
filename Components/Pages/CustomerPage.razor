@@ -136,7 +136,7 @@
         }
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         selectedClient = new Client();
         modifiedClient = new Client();
@@ -148,6 +148,7 @@
     Client selectedClient;
     Client modifiedClient;
     Client addClient;
+    
     private async Task LoadCustomersToList()
     {
         clientList = await clientManager.GetAllClientsAsync();
@@ -174,6 +175,7 @@
         {
             errMess = ex.Message;
         }
+        clientList = await clientManager.GetAllClientsAsync();
     }
     private async Task AddNewClient()
     {
@@ -212,6 +214,9 @@
             }
             await clientManager.InsertClientAsync(addClient);
             victoryMessage = $"Succusfully added {addClient}";
+
+            clientList = await clientManager.GetAllClientsAsync();            
+            
         }
         catch (Exception ex)
         {
