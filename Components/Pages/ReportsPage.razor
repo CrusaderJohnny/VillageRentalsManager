@@ -1,0 +1,87 @@
+﻿@page "/Reports"
+@using VillageRentalsManager.Domain
+@using VillageRentalsManager.Persistence
+@inject ClientManager Connection
+@inject Client client
+
+
+<h3>Reports</h3>
+
+<h2>Please Select Report Type</h2>
+
+<label>
+    Sales By Customer(input customerID):
+    <button class="btn btn-primary">Get Report</button>
+</label>
+
+<label>
+    Sales by Date(select date):
+    <label>
+        Start Date:
+        <input ="startDateInput" asp-for="StartDate" type="date" />
+    </label>
+
+    <label>
+        End Date:
+        <input ="endDateInput" asp-for="StartDate" type="date" />
+    </label>
+    <button class="btn btn-primary">Get Report</button>
+</label>
+
+
+<label>
+    List items by Category(input category):
+    <button class="btn btn-primary">Get Report</button>
+</label>
+
+<label>
+    Report Display all Clients():
+    <button class="btn btn-primary" @onclick="ReturnAllClients">Get Report</button>
+</label>
+<h1>Report</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Client ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>contact Number</th>
+            <th>Email</th>
+            <th>Notes</th>
+            <th>Banned</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (clientList != null)
+        {
+            @foreach (Client person in clientList)
+            {
+                <tr>
+                    <td>@person.CustomerID</td>
+                    <td>@person.FirstName</td>
+                    <td>@person.LastName</td>
+                    <td>@person.Contact_Number</td>
+                    <td>@person.Email</td>
+                    <td>@person.Notes</td>
+                    <td>@person.Banned</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+
+
+
+
+@code {
+    private List<Client> clientList = new List<Client>();
+
+    private async void ReturnAllClients()
+    {
+        clientList = await Connection.GetAllClientsAsync();
+    }
+
+}

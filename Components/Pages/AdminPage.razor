@@ -1,0 +1,143 @@
+﻿@page "/admin"
+@using VillageRentalsManager.Domain
+@using VillageRentalsManager.Persistence
+@inject EquipmentCategoryManagement manageCategories
+
+<div>
+    <h1>Add Equipment Category</h1>
+    <label>
+        New Equipment Category Id:
+        <input @bind-value="newCategoryID" />
+    </label>
+    <label>
+        New Equipment Category to enter:
+        <input @bind-value="newCategory" />
+    </label>
+    <button @onclick=CheckCategories>Enter New Category</button>
+</div>
+<div>
+    <h1>Remove Equipment Category</h1>
+    <label>
+        Equipment Category to Remove:
+    </label>
+    <select @bind="deleteCat">
+        @foreach (EquipmentCategory cat in categories)
+        {
+            <option value="@cat.CategoryId">@cat</option>
+        }
+    </select>
+    <button @onclick="LoadCategoriesList">Load Categories</button>
+</div>
+<div>
+    <button @onclick="RemoveCategory">Delete Selected Category</button>
+</div>
+<div>
+    @if (!string.IsNullOrEmpty(errMess))
+    {
+        <div class="alert alert-danger">@errMess</div>
+    }
+    @if (!string.IsNullOrEmpty(victoryMessage))
+    {
+        <div class="alert alertalert-success">@victoryMessage</div>
+    }
+</div>
+@code {
+    private string newCategory { get; set; } = string.Empty;
+    private int newCategoryID { get; set; }
+    private int _deleteCat;
+    int deleteCat
+    {
+        get { return _deleteCat; }
+        set
+        {
+            _deleteCat = value;
+            LoadSelected(_deleteCat);
+        }
+    }
+
+
+    private string? victoryMessage;
+    private string? errMess;
+    private List<EquipmentCategory> categories = new List<EquipmentCategory>();
+
+
+
+    EquipmentCategory categoryToAdd;
+    EquipmentCategory categoryToRemove;
+
+    private async Task LoadSelected(int selectedId)
+    {
+        categoryToRemove = await manageCategories.GetASingleEquipmentCategory(selectedId);
+    }
+    private async Task LoadCategoriesList()
+    {
+        categories = await manageCategories.GetAllEquipmentCategoryAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        categoryToAdd = new EquipmentCategory();
+        categoryToRemove = new EquipmentCategory();
+    }
+
+    private async Task CheckCategories()
+    {
+        try
+        {
+            foreach (var category in categories)
+            {
+                if (newCategoryID == 0)
+                {
+                    throw new Exception($"{newCategoryID} cannot be 0");
+                }
+                if (newCategoryID.ToString().Count() == 1)
+                {
+                    throw new Exception($"{newCategoryID} must be 2 digits");
+                }
+                if (newCategoryID.ToString().Count() != 2)
+                {
+                    throw new Exception($"{newCategoryID} must be 2 digits");
+                }
+                if (newCategoryID == category.CategoryId)
+                {
+                    throw new Exception($"{newCategoryID} ID already exists");
+                }
+                if (newCategory == category.CategoryName)
+                {
+                    throw new Exception($"{newCategory} name already exists");
+                }
+                if (string.IsNullOrEmpty(newCategory))
+                {
+                    throw new Exception($"Category requires name");
+                }
+            }
+            MakeNewCategory();
+            await manageCategories.InsertEquipmentCategory(categoryToAdd);
+            victoryMessage = $"Succesfully added {newCategory} with {newCategoryID}";
+        }
+        catch (Exception ex)
+        {
+            errMess = ex.Message;
+        }
+    }
+    private async Task RemoveCategory()
+    {
+        try
+        {
+            await manageCategories.DeleteEquipmentCategoryAsync(categoryToRemove);
+            victoryMessage = $"Succesfully removed {categoryToRemove.CategoryName}";
+        }
+        catch (Exception ex)
+        {
+            errMess = ex.Message;
+        }
+
+    }
+    void MakeNewCategory()
+    {
+        categoryToAdd.CategoryId = newCategoryID;
+        categoryToAdd.CategoryName = newCategory;
+    }
+
+
+}
