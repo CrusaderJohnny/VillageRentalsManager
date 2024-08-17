@@ -19,11 +19,11 @@
     </label>
     <label>
         customerID:
-        <input @bind-value="customerIdInput" readOnly />
+        <input @bind-value="customerSelect" readOnly />
     </label>
 </div>
 <div id="selectWheel">
-    <select @bind="customerIdInput">
+    <select @bind="customerSelect">
         @foreach (var clients in clientList)
         {
             <option value="@clients.CustomerID">@clients</option>
@@ -127,18 +127,18 @@
     private DateTime endDateInput { get; set; } = DateTime.Today;
     private string rentalEndDate { get; set; } = string.Empty;
     private double equipmentCost { get; set; } = 0.00;
-    private double totalCostOutput { get; set; } = 0.00;
+    private double totalCostOutput { get; set; }
     private string? errMess;
     private string? victoryMessage;
     private List<Client> clientList = new List<Client>();
     private List<Equipment> equipmentList = new List<Equipment>();
-    private string? _customerSelect;
+    private int _customerSelect;
     private string? _equipmentSelect;
     private Client selectedClient;
     private Equipment selectedEquipment;
     private double days;
     private List<Reservation> rentalList = new List<Reservation>();
-    string? customerSelect
+    int customerSelect
     {
         get
         {
@@ -146,7 +146,8 @@
         }
         set
         {
-            _customerSelect = value; FindClient(); cLastName = selectedClient.LastName;
+            _customerSelect = value;
+            cLastName = selectedClient.LastName;
         }
     }
 
@@ -158,7 +159,6 @@
         rentalIdInput = "0";
         customerIdInput = "Any";
         cLastName = "Blank";
-        equipmentIdSelection = "Blank";
         equipmentCost = 0.00;
         totalCostOutput = 0.00;
         clientList = await connection.GetAllClientsAsync();
@@ -172,18 +172,26 @@
     {
         selectedClient = await connection.GetAClientAsync(Int32.Parse(customerIdInput));
     }
-    private void TotalCostCalc()
-    {
-
-    }
     private async Task tally()
     {
-        int equipmentId = Int32.Parse(equipmentIdSelection);
-        Equipment eqItem = await connection2.GetASingleEquipmentAsync(equipmentId);
-        equipmentCost = eqItem.DailyRate;
-        days = (endDateInput - startDateInput).TotalDays;
-        totalCostOutput = days * eqItem.DailyRate;
-       
+        try
+        {
+            int equipmentId = Int32.Parse(equipmentIdSelection);
+            Equipment eqItem = await connection2.GetASingleEquipmentAsync(equipmentId);
+            equipmentCost = eqItem.DailyRate;
+            days = (endDateInput - startDateInput).TotalDays;
+            if(days == 0)
+            {
+                days = 1;
+            }
+            totalCostOutput = days * equipmentCost;
+
+        }
+        catch(Exception ex)
+        {
+            errMess = ex.Message;
+        }
+
 
     }
     protected async Task AddEquipment()
